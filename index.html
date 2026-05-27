@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="QuizMaster — An interactive quiz application with multiple categories, timer, and score tracking." />
+  <title>QuizMaster — Interactive Quiz App</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ── SCREEN 1: HOME ─────────────────────────────────────── -->
+  <div class="screen active" id="screen-home">
+    <div class="home-wrapper">
+      <div class="home-header">
+        <div class="app-logo">
+          <span class="logo-icon">🧠</span>
+          <span class="logo-text">QuizMaster</span>
+        </div>
+        <p class="home-subtitle">Test your knowledge across multiple categories</p>
+      </div>
+
+      <div class="home-stats-bar" id="homeStatsBar">
+        <div class="hs-item">
+          <span class="hs-val" id="hsTotalPlayed">0</span>
+          <span class="hs-lbl">Quizzes Played</span>
+        </div>
+        <div class="hs-divider"></div>
+        <div class="hs-item">
+          <span class="hs-val" id="hsBestScore">—</span>
+          <span class="hs-lbl">Best Score</span>
+        </div>
+        <div class="hs-divider"></div>
+        <div class="hs-item">
+          <span class="hs-val" id="hsAvgScore">—</span>
+          <span class="hs-lbl">Avg Score</span>
+        </div>
+      </div>
+
+      <div class="setup-card">
+        <h2 class="setup-title">Choose Your Quiz</h2>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="categorySelect">Category</label>
+            <select id="categorySelect" aria-label="Select quiz category">
+              <option value="general">🌍 General Knowledge</option>
+              <option value="science">🔬 Science</option>
+              <option value="technology">💻 Technology</option>
+              <option value="math">📐 Mathematics</option>
+              <option value="history">📜 History</option>
+              <option value="mixed">🎲 Mixed (All Categories)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="difficultySelect">Difficulty</label>
+            <select id="difficultySelect" aria-label="Select difficulty">
+              <option value="easy">🟢 Easy</option>
+              <option value="medium" selected>🟡 Medium</option>
+              <option value="hard">🔴 Hard</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="questionCount">Questions</label>
+            <select id="questionCount" aria-label="Number of questions">
+              <option value="5">5 Questions</option>
+              <option value="10" selected>10 Questions</option>
+              <option value="15">15 Questions</option>
+              <option value="20">20 Questions</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="timerSelect">Timer per Question</label>
+            <select id="timerSelect" aria-label="Timer duration">
+              <option value="0">No Timer</option>
+              <option value="15">15 Seconds</option>
+              <option value="30" selected>30 Seconds</option>
+              <option value="60">60 Seconds</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="btn-start" id="startBtn">
+          <span>Start Quiz</span>
+          <span class="btn-arrow">→</span>
+        </button>
+      </div>
+
+      <div class="category-cards">
+        <div class="cat-card" data-cat="general">
+          <span class="cat-icon">🌍</span>
+          <span class="cat-name">General</span>
+        </div>
+        <div class="cat-card" data-cat="science">
+          <span class="cat-icon">🔬</span>
+          <span class="cat-name">Science</span>
+        </div>
+        <div class="cat-card" data-cat="technology">
+          <span class="cat-icon">💻</span>
+          <span class="cat-name">Tech</span>
+        </div>
+        <div class="cat-card" data-cat="math">
+          <span class="cat-icon">📐</span>
+          <span class="cat-name">Math</span>
+        </div>
+        <div class="cat-card" data-cat="history">
+          <span class="cat-icon">📜</span>
+          <span class="cat-name">History</span>
+        </div>
+        <div class="cat-card" data-cat="mixed">
+          <span class="cat-icon">🎲</span>
+          <span class="cat-name">Mixed</span>
+        </div>
+      </div>
+
+      <button class="btn-ghost leaderboard-btn" id="showLeaderboardBtn">🏆 View Leaderboard</button>
+    </div>
+  </div>
+
+  <!-- ── SCREEN 2: QUIZ ─────────────────────────────────────── -->
+  <div class="screen" id="screen-quiz">
+    <div class="quiz-wrapper">
+
+      <!-- Top Bar -->
+      <div class="quiz-topbar">
+        <div class="quiz-meta">
+          <span class="quiz-category-tag" id="quizCategoryTag">General</span>
+          <span class="quiz-difficulty-tag" id="quizDifficultyTag">Medium</span>
+        </div>
+        <div class="quiz-progress-info">
+          <span id="questionCounter">1 / 10</span>
+        </div>
+        <button class="quit-btn" id="quitBtn" aria-label="Quit quiz">✕ Quit</button>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="progress-bar-wrap" role="progressbar" aria-label="Quiz progress" aria-valuemin="0" aria-valuemax="100">
+        <div class="progress-bar-fill" id="progressFill"></div>
+      </div>
+
+      <!-- Score & Timer Row -->
+      <div class="quiz-info-row">
+        <div class="score-live">
+          <span class="score-label">Score</span>
+          <span class="score-value" id="liveScore">0</span>
+        </div>
+        <div class="timer-wrap" id="timerWrap">
+          <svg class="timer-svg" viewBox="0 0 40 40" aria-hidden="true">
+            <circle class="timer-bg" cx="20" cy="20" r="17"/>
+            <circle class="timer-ring" id="timerRing" cx="20" cy="20" r="17"
+                    stroke-dasharray="107" stroke-dashoffset="0"/>
+          </svg>
+          <span class="timer-num" id="timerNum">30</span>
+        </div>
+        <div class="streak-wrap">
+          <span class="streak-label">Streak 🔥</span>
+          <span class="streak-value" id="streakVal">0</span>
+        </div>
+      </div>
+
+      <!-- Question Card -->
+      <div class="question-card" id="questionCard">
+        <div class="question-number" id="questionNum">Question 1</div>
+        <p class="question-text" id="questionText">Loading question...</p>
+      </div>
+
+      <!-- Answer Options -->
+      <div class="options-grid" id="optionsGrid" role="list" aria-label="Answer options">
+        <!-- Injected by JS -->
+      </div>
+
+      <!-- Feedback -->
+      <div class="feedback-bar" id="feedbackBar" hidden>
+        <span class="feedback-icon" id="feedbackIcon"></span>
+        <div class="feedback-content">
+          <span class="feedback-msg" id="feedbackMsg"></span>
+          <span class="feedback-exp" id="feedbackExp"></span>
+        </div>
+        <button class="btn-next" id="nextBtn">Next →</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── SCREEN 3: RESULTS ──────────────────────────────────── -->
+  <div class="screen" id="screen-results">
+    <div class="results-wrapper">
+
+      <div class="results-header">
+        <div class="result-emoji" id="resultEmoji">🎉</div>
+        <h1 class="result-title" id="resultTitle">Quiz Complete!</h1>
+        <p class="result-subtitle" id="resultSubtitle">Here's how you did</p>
+      </div>
+
+      <div class="score-circle-wrap">
+        <svg class="score-circle-svg" viewBox="0 0 160 160" aria-hidden="true">
+          <circle class="sc-bg" cx="80" cy="80" r="70"/>
+          <circle class="sc-fill" id="scFill" cx="80" cy="80" r="70"
+                  stroke-dasharray="440" stroke-dashoffset="440"/>
+        </svg>
+        <div class="score-circle-text">
+          <span class="sc-pct" id="scPct">0%</span>
+          <span class="sc-label">Score</span>
+        </div>
+      </div>
+
+      <div class="result-stats">
+        <div class="rs-item correct">
+          <span class="rs-val" id="rsCorrect">0</span>
+          <span class="rs-lbl">✅ Correct</span>
+        </div>
+        <div class="rs-item wrong">
+          <span class="rs-val" id="rsWrong">0</span>
+          <span class="rs-lbl">❌ Wrong</span>
+        </div>
+        <div class="rs-item skipped">
+          <span class="rs-val" id="rsSkipped">0</span>
+          <span class="rs-lbl">⏭ Skipped</span>
+        </div>
+        <div class="rs-item time">
+          <span class="rs-val" id="rsTime">0s</span>
+          <span class="rs-lbl">⏱ Time</span>
+        </div>
+        <div class="rs-item streak">
+          <span class="rs-val" id="rsBest">0</span>
+          <span class="rs-lbl">🔥 Best Streak</span>
+        </div>
+        <div class="rs-item grade">
+          <span class="rs-val" id="rsGrade">—</span>
+          <span class="rs-lbl">🏅 Grade</span>
+        </div>
+      </div>
+
+      <div class="result-actions">
+        <button class="btn-start" id="retryBtn">↺ Play Again</button>
+        <button class="btn-ghost" id="reviewBtn">📋 Review Answers</button>
+        <button class="btn-ghost" id="homeBtn">🏠 Home</button>
+      </div>
+
+      <!-- Review Panel -->
+      <div class="review-panel" id="reviewPanel" hidden>
+        <h2 class="review-title">Answer Review</h2>
+        <div class="review-list" id="reviewList"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── MODAL: LEADERBOARD ─────────────────────────────────── -->
+  <div class="modal-overlay" id="leaderboardModal" hidden aria-modal="true" role="dialog" aria-label="Leaderboard">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>🏆 Leaderboard</h2>
+        <button class="modal-close" id="closeLeaderboard" aria-label="Close">✕</button>
+      </div>
+      <div class="lb-filters">
+        <button class="lb-filter active" data-cat="all">All</button>
+        <button class="lb-filter" data-cat="general">🌍 General</button>
+        <button class="lb-filter" data-cat="science">🔬 Science</button>
+        <button class="lb-filter" data-cat="technology">💻 Tech</button>
+        <button class="lb-filter" data-cat="math">📐 Math</button>
+        <button class="lb-filter" data-cat="history">📜 History</button>
+      </div>
+      <ol class="lb-list" id="lbList">
+        <li class="empty-state">No scores yet. Play a quiz!</li>
+      </ol>
+      <button class="btn-danger-sm" id="clearLeaderboardBtn">Clear History</button>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast" role="alert" aria-live="polite"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
